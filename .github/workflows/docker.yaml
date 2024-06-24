@@ -76,4 +76,4 @@ jobs:
           tags: |
             ggxdocker/ggxnode-brooklyn-img:latest
             ggxdocker/ggxnode-brooklyn-img:${{ steps.vars.outputs.sha_short }}
-            ${{ github.event_name == 'release' && 'ggxdocker/ggxnode-brooklyn-img:' + github.event.release.tag_name || '' }}
+            ${{ github.event_name == 'release' && 'ggxdocker/ggxnode-brooklyn-img:'$github.event.release.tag_name || '' }}
