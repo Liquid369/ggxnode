@@ -6,7 +6,7 @@ on:
       - published
   push:
     branches:
-      - master
+      - main
 
 env:
   NIX_VERSION: nix-2.13.2
@@ -48,7 +48,7 @@ jobs:
             ggxdocker/ggxnode-sydney-img:${{ steps.vars.outputs.sha_short }}
 
   build-brooklyn:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master' || github.event_name == 'release'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'release'
     runs-on: buildjet-32vcpu-ubuntu-2204
     steps:
       - name: Check out code
