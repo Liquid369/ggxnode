@@ -18,7 +18,7 @@ env:
 jobs:
   build-sydney:
     if: github.event_name == 'release'
-    runs-on: buildjet-32vcpu-ubuntu-2204
+    runs-on: ubuntu:latest
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -49,7 +49,7 @@ jobs:
 
   build-brooklyn:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'release'
-    runs-on: buildjet-32vcpu-ubuntu-2204
+    runs-on: ubuntu:latest
     steps:
       - name: Check out code
         uses: actions/checkout@v4
