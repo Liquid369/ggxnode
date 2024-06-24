@@ -34,7 +34,7 @@ jobs:
 
       - name: Set outputs
         id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3.1.1
@@ -65,7 +65,7 @@ jobs:
 
       - name: Set outputs
         id: vars
-        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3.1.1
@@ -76,4 +76,13 @@ jobs:
           tags: |
             ggxdocker/ggxnode-brooklyn-img:latest
             ggxdocker/ggxnode-brooklyn-img:${{ steps.vars.outputs.sha_short }}
-            ${{ github.event_name == 'release' && 'ggxdocker/ggxnode-brooklyn-img:'$github.event.release.tag_name || '' }}
+
+      - name: Add release tag
+        if: github.event_name == 'release'
+        run: echo "ggxdocker/ggxnode-brooklyn-img:${{ github.event.release.tag_name }}" >> release_tags.txt
+
+      - name: Push release tag
+        if: github.event_name == 'release'
+        run: |
+          docker tag ggxdocker/ggxnode-brooklyn-img:latest ggxdocker/ggxnode-brooklyn-img:${{ github.event.release.tag_name }}
+          docker push ggxdocker/ggxnode-brooklyn-img:${{ github.event.release.tag_name }}
