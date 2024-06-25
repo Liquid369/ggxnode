@@ -77,18 +77,22 @@ jobs:
             ggxdocker/ggxnode-brooklyn-img:latest
             ggxdocker/ggxnode-brooklyn-img:${{ steps.vars.outputs.sha_short }}
 
-      - name: Add release tag
-        if: github.event_name == 'release'
-        run: echo "ggxdocker/ggxnode-brooklyn-img:${{ github.event.release.tag_name }}" >> release_tags.txt
+  tag-brooklyn-release:
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    needs: build-brooklyn
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
 
-      - name: Push release tag
-        if: github.event_name == 'release'
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Tag and push release
         run: |
-          IMAGE_ID=$(docker images -q ggxdocker/ggxnode-brooklyn-img:latest)
-          if [ -n "$IMAGE_ID" ]; then
-            docker tag ggxdocker/ggxnode-brooklyn-img:latest ggxdocker/ggxnode-brooklyn-img:${{ github.event.release.tag_name }}
-            docker push ggxdocker/ggxnode-brooklyn-img:${{ github.event.release.tag_name }}
-          else
-            echo "Image ggxdocker/ggxnode-brooklyn-img:latest not found"
-            exit 1
-          fi
+          docker pull ggxdocker/ggxnode-brooklyn-img:latest
+          docker tag ggxdocker/ggxnode-brooklyn-img:latest ggxdocker/ggxnode-brooklyn-img:${{ github.event.release.tag_name }}
+          docker push ggxdocker/ggxnode-brooklyn-img:${{ github.event.release.tag_name }}
