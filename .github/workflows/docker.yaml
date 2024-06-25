@@ -48,7 +48,6 @@ jobs:
             ggxdocker/ggxnode-sydney-img:${{ steps.vars.outputs.sha_short }}
 
   build-brooklyn:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' || github.event_name == 'release'
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
