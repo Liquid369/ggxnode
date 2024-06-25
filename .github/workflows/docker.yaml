@@ -68,6 +68,7 @@ jobs:
         run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
       - name: Build and push Docker image
+        id: build_and_push
         uses: docker/build-push-action@v3.1.1
         with:
           context: .
@@ -84,5 +85,11 @@ jobs:
       - name: Push release tag
         if: github.event_name == 'release'
         run: |
-          docker tag ggxdocker/ggxnode-brooklyn-img:latest ggxdocker/ggxnode-brooklyn-img:${{ github.event.release.tag_name }}
-          docker push ggxdocker/ggxnode-brooklyn-img:${{ github.event.release.tag_name }}
+          IMAGE_ID=$(docker images -q ggxdocker/ggxnode-brooklyn-img:latest)
+          if [ -n "$IMAGE_ID" ]; then
+            docker tag ggxdocker/ggxnode-brooklyn-img:latest ggxdocker/ggxnode-brooklyn-img:${{ github.event.release.tag_name }}
+            docker push ggxdocker/ggxnode-brooklyn-img:${{ github.event.release.tag_name }}
+          else
+            echo "Image ggxdocker/ggxnode-brooklyn-img:latest not found"
+            exit 1
+          fi
